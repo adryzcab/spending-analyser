@@ -221,3 +221,4 @@ __marimo__/
 
 # Personal bank data - never commit
 data/raw/
+notebooks/01_explore_hsbc.ipynb
