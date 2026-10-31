@@ -10,7 +10,7 @@ This project helps me see exactly where my money goes, what on, and how much.
 
 
 ## Planned Features
-- [ ] Load and clean bank transaction CSVs
+- [x] Load and clean bank transaction CSVs
 - [ ] Categorise transactions
 - [ ] Analyse and visualise spending
 - [ ] Interactive dashboard
