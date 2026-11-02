@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 
-from spending_analyser.analysis import spending_by_category, monthly_spending
+from spending_analyser.analysis import spending_by_category, monthly_spending, monthly_change
 from spending_analyser.categoriser import add_categories
 from spending_analyser.loader import load_hsbc_csv
 
@@ -56,3 +56,20 @@ def test_same_month_different_years():
     result = monthly_spending(df)
     assert len(result) == 2
     assert result.iloc[0] == 10
+
+def test_monthly_change_values():
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2026-08-01", "2026-09-01", "2026-10-01"]),
+        "amount": [-300.0, -450.0, -400.0],
+    })
+    result = monthly_change(df)
+    assert result.iloc[1] == 150
+    assert result.iloc[2] == -50
+
+def test_montly_change_first_month_nan():
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2026-08-01", "2026-09-01"]),
+        "amount": [-300.0, -450.0]
+    })
+    result = monthly_change(df)
+    assert pd.isna(result.iloc[0])
