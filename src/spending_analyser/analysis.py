@@ -20,3 +20,8 @@ def monthly_spending(df: pd.DataFrame) -> pd.Series:
     months = spending["date"].dt.to_period("M")
     totals = spending.groupby(months)["amount"].sum()
     return totals.abs().sort_index()
+
+def monthly_change(df: pd.DataFrame) -> pd.Series:
+    """Return change in spending vs the previous month (first month is NaN)."""
+    totals = monthly_spending(df)
+    return totals.diff()
