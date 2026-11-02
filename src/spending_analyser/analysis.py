@@ -13,3 +13,10 @@ def spending_by_category(df: pd.DataFrame) -> pd.Series:
     by_category = spending.groupby("category")["amount"].sum()
     by_category = by_category.abs().sort_values(ascending=False)
     return by_category
+
+def monthly_spending(df: pd.DataFrame) -> pd.Series:
+    """Return total spending per month (positive numbers), oldest first."""
+    spending = df[df["amount"] < 0]
+    months = spending["date"].dt.to_period("M")
+    totals = spending.groupby(months)["amount"].sum()
+    return totals.abs().sort_index()
