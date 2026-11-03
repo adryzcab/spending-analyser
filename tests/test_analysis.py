@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 
-from spending_analyser.analysis import spending_by_category, monthly_spending, monthly_change, monthly_income
+from spending_analyser.analysis import spending_by_category, monthly_spending, monthly_change, monthly_income, monthly_summary
 from spending_analyser.categoriser import add_categories
 from spending_analyser.loader import load_hsbc_csv
 
@@ -90,3 +90,20 @@ def test_monthly_income_month_without_income():
     })
     result = monthly_income(df)
     assert len(result) == 1
+
+def test_monthly_summary_net():
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2026-10-01", "2026-10-05", "2026-10-20"]),
+        "amount": [1000.0, -200.0, -300.0],
+    })
+    result = monthly_summary(df)
+    assert result["net"].iloc[0] == 500.0
+
+def test_monthly_summary_missing_income_is_zero():
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2026-10-01", "2026-11-05"]),
+        "amount": [1000.0, -300.0]
+    })
+    result = monthly_summary(df)
+    assert result["income"].iloc[1] == 0
+    assert result["net"].iloc[1] == -300
