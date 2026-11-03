@@ -32,3 +32,13 @@ def monthly_income(df: pd.DataFrame) -> pd.Series:
     months = income["date"].dt.to_period("M")
     totals = income.groupby(months)["amount"].sum()
     return totals.sort_index()
+
+def monthly_summary(df: pd.DataFrame) -> pd.DataFrame:
+    """Return income, spending and net per month, oldest first."""
+    table = pd.DataFrame({
+        "income": monthly_income(df),
+        "spending": monthly_spending(df),
+    })
+    table = table.fillna(0)
+    table["net"] = table["income"] - table["spending"]
+    return table.sort_index()
