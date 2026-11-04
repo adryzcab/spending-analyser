@@ -107,3 +107,11 @@ def test_monthly_summary_missing_income_is_zero():
     result = monthly_summary(df)
     assert result["income"].iloc[1] == 0
     assert result["net"].iloc[1] == -300
+
+def test_monthly_summary_empty_input():
+    df = pd.DataFrame({
+        "date": pd.to_datetime([]),
+        "amount": pd.Series([], dtype=float),
+    })
+    result = monthly_summary(df)
+    assert len(result) == 0
