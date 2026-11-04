@@ -10,11 +10,12 @@ This project helps me see exactly where my money goes, what on, and how much.
 
 
 ## Planned Features
-- [x] Load and clean bank transaction CSVs
+- [x] Load and clean bank transaction CSV
 - [x] Categorise transactions
 - [ ] Analyse and visualise spending
 - [ ] Interactive dashboard
 - [ ] ML-based auto-categorisation
+- [ ] Automatically ingest new CSVs (with re-deplication)
 
 ## Tech Stack
 Python, pandas, matplotlib
