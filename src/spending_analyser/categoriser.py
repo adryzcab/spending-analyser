@@ -1,15 +1,19 @@
 import pandas as pd
+import re
 
 
 CATEGORY_RULES = {
-    "Groceries": ["TESCO", "SAINSBURY"],
+    "Groceries": ["TESCO", "SAINSBURYS"],
     "Transport": ["TFL", "UBER"],
-    "Eating out": ["CAFE", "PRET"],
+    "Eating out": ["CAFE", "PRET", "NANDOS"],
     "Shopping": ["AMAZON"],
     "Utilities": ["GAS", "ELECTRIC", "WATER"],
     "Saving": ["SAVING"],
     "Rent": ["RENT"],
-    "Travel": ["EASYJET"]
+    "Travel": ["EASYJET"],
+    "Entertainment": ["STEAM GAMES"],
+    "Self care": ["BOOTS"],
+    "Subscriptions": ["SPOTIFY", "NETFLIX"]
 }
 
 def categorise(description: str, amount: float) -> str:
@@ -20,7 +24,7 @@ def categorise(description: str, amount: float) -> str:
     text = description.upper()
     for category, keywords in CATEGORY_RULES.items():
         for keyword in keywords:
-            if keyword in text:
+            if re.search(rf"\b{keyword}\b", text):
                 return category
 
     return "Other"

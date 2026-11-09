@@ -23,6 +23,26 @@ def test_positive_amount_beats_keyword():
 def test_unknown_description_is_other():
     assert categorise("RANDOM SHOP", -5.00) == "Other"
 
+def test_netflix_is_subscriptions():
+    assert categorise("NETFLIX.COM", -10.99) == "Subscriptions"
+
+def test_boots_is_self_care():
+    assert categorise("BOOTS", -7.43) == "Self care"
+
+def test_steam_is_entertainment():
+    assert categorise("STEAM GAMES", -32.00) == "Entertainment"
+
+def test_nandos_is_eating_out():
+    assert categorise("NANDOS", -23.42) == "Eating out"
+
+def test_spotify_is_subscriptions():
+    assert categorise("SPOTIFY", -7.00) == "Subscriptions"
+
+def test_sainsburys_is_groceries():
+    assert categorise("SAINSBURYS", -43.57) == "Groceries"
+
+    
+
 
 
 # add_categories(): Whole DataFrame
