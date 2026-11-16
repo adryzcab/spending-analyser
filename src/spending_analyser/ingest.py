@@ -9,6 +9,7 @@ def ingest_hsbc_csvs(paths: list[str]) -> pd.DataFrame:
     for path in paths:
         df = load_hsbc_csv(path)
         frames.append(df)
+    frames.sort(key=lambda df: df["date"].min())
     kept = []
     for i in range(len(frames)):
         frame = frames[i]

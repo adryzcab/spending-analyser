@@ -30,3 +30,7 @@ def test_pret_3_NOV_included():
     df = ingest_hsbc_csvs([SAMPLE_PATH_1, SAMPLE_PATH_2, SAMPLE_PATH_3])
     pret = df[(df["description"] == "PRET A MANGER")]
     assert len(pret) == 3
+
+def test_unsorted_files_sorted():
+    df = ingest_hsbc_csvs([SAMPLE_PATH_2, SAMPLE_PATH_3, SAMPLE_PATH_1])
+    assert len(df) == 13
