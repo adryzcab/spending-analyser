@@ -4,6 +4,7 @@ from spending_analyser.ingest import ingest_hsbc_csvs
 
 SAMPLE_PATH_1 = "data/sample/hsbc_overlap_1.csv"
 SAMPLE_PATH_2 = "data/sample/hsbc_overlap_2.csv"
+SAMPLE_PATH_3 = "data/sample/hsbc_overlap_3.csv"
 
 
 def test_overlapping_days_not_double_counted():
@@ -20,3 +21,12 @@ def test_incomplete_day_transactions_included():
     df = ingest_hsbc_csvs([SAMPLE_PATH_1, SAMPLE_PATH_2])
     nandos = df[df["description"] == "NANDOS"]
     assert len(nandos) == 1
+
+def test_3_samples_have_13_rows():
+    df = ingest_hsbc_csvs([SAMPLE_PATH_1, SAMPLE_PATH_2, SAMPLE_PATH_3])
+    assert len(df) == 13
+
+def test_pret_3_NOV_included():
+    df = ingest_hsbc_csvs([SAMPLE_PATH_1, SAMPLE_PATH_2, SAMPLE_PATH_3])
+    pret = df[(df["description"] == "PRET A MANGER")]
+    assert len(pret) == 3

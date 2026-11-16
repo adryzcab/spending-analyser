@@ -9,9 +9,15 @@ def ingest_hsbc_csvs(paths: list[str]) -> pd.DataFrame:
     for path in paths:
         df = load_hsbc_csv(path)
         frames.append(df)
-    first = frames[0]
-    last_date = first["date"].max()
-    first = first[first["date"] < last_date]
-    second = frames[1]
-    second = second[second["date"] >= last_date]
-    return pd.concat([first, second], ignore_index=True)
+    kept = []
+    for i in range(len(frames)):
+        frame = frames[i]
+        if i != 0:
+            previous = frames[i -1]
+            last_date = previous["date"].max()
+            frame = frame[frame["date"] >= last_date]
+        if i != len(frames) -1:
+            own_last = frame["date"].max()
+            frame = frame[frame["date"] < own_last]
+        kept.append(frame)
+    return pd.concat(kept, ignore_index=True)
