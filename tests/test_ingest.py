@@ -31,6 +31,44 @@ def test_pret_3_NOV_included():
     pret = df[(df["description"] == "PRET A MANGER")]
     assert len(pret) == 3
 
-def test_unsorted_files_sorted():
+def test_file_order_does_not_matter():
     df = ingest_hsbc_csvs([SAMPLE_PATH_2, SAMPLE_PATH_3, SAMPLE_PATH_1])
     assert len(df) == 13
+
+
+import sqlite3
+
+import pytest
+
+from spending_analyser.ingest import add_statement
+from spending_analyser.storage import create_table, load_transactions
+
+def make_empty_db():
+    """Return a connection to an empty in-memory database."""
+    conn = sqlite3.connect(":memory:")
+    create_table(conn)
+    return conn
+
+def test_first_statement_skips_last_day():
+    conn = make_empty_db()
+    add_statement(SAMPLE_PATH_1, conn)
+    assert len(load_transactions(conn)) == 6
+
+def test_overlapping_between_statements_not_duplicated():
+    conn = make_empty_db()
+    add_statement(SAMPLE_PATH_1, conn)
+    add_statement(SAMPLE_PATH_2, conn)
+    add_statement(SAMPLE_PATH_3, conn)
+    assert len(load_transactions(conn)) == 12
+
+def test_gap_between_statements_raises_error():
+    conn = make_empty_db()
+    add_statement(SAMPLE_PATH_1, conn)
+    with pytest.raises(ValueError):
+        add_statement(SAMPLE_PATH_3, conn)
+
+def test_same_statement_twice_not_duplicated():
+    conn = make_empty_db()
+    add_statement(SAMPLE_PATH_1, conn)
+    add_statement(SAMPLE_PATH_1, conn)
+    assert len(load_transactions(conn)) == 6
