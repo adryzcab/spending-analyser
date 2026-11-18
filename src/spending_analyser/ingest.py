@@ -47,3 +47,12 @@ def add_statement(path: str, conn: sqlite3.Connection) -> None:
     if latest is not None:
         df = df[df["date"] > latest]
     save_transactions(df, conn)
+
+def add_statements(paths: list[str], conn: sqlite3.Connection) -> None:
+    """Add several HSBC CSVs to the database, in date order whatever order they're given."""
+    for path in sorted(paths, key=first_date):
+        add_statement(path, conn)
+
+def first_date(path: str) -> pd.Timestamp:
+    """Return the earliest transaction date in a CSV."""
+    return load_hsbc_csv(path)["date"].min()

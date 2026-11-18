@@ -32,7 +32,7 @@ pytest
 ```
 
 ## Usage
-Run `run.py` with one or more HSBC CSV exports, **oldest first**.
+Run `run.py` with one or more HSBC CSV exportss.
 Transactions are saved to a local SQLite database (`data/spending.db`),
 and a monthly summary of income, spending and net is printed for
 everything stored so far.

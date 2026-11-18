@@ -72,3 +72,8 @@ def test_same_statement_twice_not_duplicated():
     add_statement(SAMPLE_PATH_1, conn)
     add_statement(SAMPLE_PATH_1, conn)
     assert len(load_transactions(conn)) == 6
+
+def test_statement_order_does_not_matter():
+    conn = make_empty_db()
+    add_statement([SAMPLE_PATH_1, SAMPLE_PATH_2, SAMPLE_PATH_3], conn)
+    assert len(load_transactions(conn)) == 12
