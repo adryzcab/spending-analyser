@@ -1,16 +1,25 @@
 import sys
+import sqlite3
 
-from spending_analyser.ingest import ingest_hsbc_csvs
+from spending_analyser.ingest import add_statement
 from spending_analyser.analysis import monthly_summary
+from spending_analyser.storage import create_table, load_transactions
+
+DB_PATH = "data/spending.db"
+
 
 
 def main():
     if len(sys.argv) < 2:
         print("Usage: python run.py <csv> [<csv> ...]")
         sys.exit(1)
-    csv_paths = sys.argv[1:]
-    df = ingest_hsbc_csvs(csv_paths)
-    print(monthly_summary(df))
+    conn = sqlite3.connect(DB_PATH)
+    create_table(conn)
+    for path in sys.argv[1:]:
+        add_statement(path, conn)
+    print(monthly_summary(load_transactions(conn)))
+    conn.close()
+
 
 
 if __name__ == "__main__":
