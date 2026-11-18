@@ -30,3 +30,11 @@ def load_transactions(conn: sqlite3.Connection) -> pd.DataFrame:
         conn,
         parse_dates=["date"]
     )
+
+def set_manual_category(conn: sqlite3.Connection, transaction_id: int, category: str) -> None:
+    """Set a transaction's category by hand and mark it as manual."""
+    conn.execute(
+        "UPDATE transactions SET category = ?, category_source = 'manual' WHERE id = ?",
+        (category, transaction_id)
+    )
+    conn.commit()
