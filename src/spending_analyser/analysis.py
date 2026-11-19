@@ -42,3 +42,20 @@ def monthly_summary(df: pd.DataFrame) -> pd.DataFrame:
     table = table.fillna(0)
     table["net"] = table["income"] - table["spending"]
     return table.sort_index()
+
+def unusual_transactions(df: pd.DataFrame) -> pd.DataFrame:
+    """Return spending that is unusually large for its category.
+    
+    Uses the IQR rule per category: a purchase is unusual if it's 
+    above the category's 75th percentile + 1.5 * IQR
+    """
+    spending = df[df["amount"] < 0]
+    sizes = spending["amount"].abs()
+    limits = sizes.groupby(spending["category"]).transform(upper_limit)
+    return spending[sizes > limits]
+
+def upper_limit(amounts: pd.Series) -> float:
+    """Return the IQR-rule upper limit for a set of amounts."""
+    q1 = amounts.quantile(0.25)
+    q3 = amounts.quantile(0.75)
+    return q3 + 1.5 * (q3 - q1)

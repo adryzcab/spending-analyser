@@ -40,7 +40,7 @@ import sqlite3
 
 import pytest
 
-from spending_analyser.ingest import add_statement
+from spending_analyser.ingest import add_statement, add_statements
 from spending_analyser.storage import create_table, load_transactions
 
 def make_empty_db():
@@ -75,5 +75,5 @@ def test_same_statement_twice_not_duplicated():
 
 def test_statement_order_does_not_matter():
     conn = make_empty_db()
-    add_statement([SAMPLE_PATH_1, SAMPLE_PATH_2, SAMPLE_PATH_3], conn)
+    add_statements([SAMPLE_PATH_1, SAMPLE_PATH_2, SAMPLE_PATH_3], conn)
     assert len(load_transactions(conn)) == 12

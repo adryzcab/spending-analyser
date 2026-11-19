@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 
-from spending_analyser.analysis import spending_by_category, monthly_spending, monthly_change, monthly_income, monthly_summary
+from spending_analyser.analysis import spending_by_category, monthly_spending, monthly_change, monthly_income, monthly_summary, unusual_transactions
 from spending_analyser.categoriser import add_categories
 from spending_analyser.loader import load_hsbc_csv
 
@@ -115,3 +115,24 @@ def test_monthly_summary_empty_input():
     })
     result = monthly_summary(df)
     assert len(result) == 0
+
+def make_unusual_df():
+    """Shopping with one big purchase, identical rent payments, and income."""
+    return pd.DataFrame({
+        "date": pd.to_datetime(["2026-10-01"] * 9),
+        "amount": [-10.0, -11.0, -12.0, -13.0, -100.0, -1150.0, -1150.0, -1150.0, 2000.0,],
+        "category": ["Shopping"] * 5 + ["Rent"] * 3 + ["Income"],
+    })
+
+def test_unusual_purchase_flagged():
+    result = unusual_transactions(make_unusual_df())
+    assert len(result) == 1
+    assert result["amount"].iloc[0] == -100.0
+
+def test_identical_amounts_not_flagged():
+    result = unusual_transactions(make_unusual_df())
+    assert "Rent" not in result["category"].values
+
+def test_income_ignored():
+    result = unusual_transactions(make_unusual_df())
+    assert (result["amount"] < 0).all()
