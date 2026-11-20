@@ -55,6 +55,15 @@ Notes:
 - Adding the same statement twice has no effect.
 - The database file is git-ignored, so your bank data is never committed.
 
+### Labelling
+Review transactions and confirm or correct their categories:
+
+```
+python label.py
+```
+
+It shows every "Other" transactions, then a random sample of rule-labelled ones. Press Enter to confirm, tpye a category to change it, 's' to skip, or 'q' to quit. Reviewed transactions are saved as manual labels, which are never overwritten when the keyword rules change.
+
 ## Planned Features
 - [x] Load and clean bank transaction CSV
 - [x] Categorise transactions
@@ -62,6 +71,7 @@ Notes:
 - [x] Combine multiple CSVs with de-duplication
 - [x] Store transactions in SQLite, with manual category corrections
 - [x] Add new statements to the database without duplicates
+- [x] Review and correct categories by hand.
 - [ ] Automatically ingest new CSVs from a folder
 - [ ] Interactive dashboard
 - [ ] ML-based auto-categorisation
