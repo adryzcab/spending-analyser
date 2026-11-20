@@ -3,7 +3,7 @@ import pandas as pd
 
 from spending_analyser.loader import load_hsbc_csv
 from spending_analyser.categoriser import add_categories
-from spending_analyser.storage import create_table, save_transactions, load_transactions, set_manual_category
+from spending_analyser.storage import create_table, save_transactions, load_transactions, set_manual_category, transactions_to_review, recategorise
 
 
 SAMPLE_PATH = "data/sample/hsbc_sample.csv"
@@ -55,4 +55,60 @@ def test_manual_category_changes_only_one_row():
     result = load_transactions(conn)
     assert (result["category_source"] == "manual").sum() == 1
 
+def make_review_db():
+    """A database with 2 'Other' rows and 5 rule-labelled rows."""
+    conn = sqlite3.connect(":memory:")
+    create_table(conn)
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2026-10-01"] * 7),
+        "description": ["SHOP A", "SHOP B", "TESCO", "TESCO", "PRET A MANGER", "TFL TRAVEL CH", "UBER *TRIP"],
+        "amount": [-5.0] * 7,
+        "category": ["Other", "Other", "Groceries", "Groceries", "Eating out", "Transport", "Transport"],
+    })
+    save_transactions(df, conn)
+    return conn
 
+def test_review_includes_all_other_rows():
+    result = transactions_to_review(make_review_db(), sample_size=2)
+    assert (result["category"] == "Other").sum() == 2
+
+def test_review_sample_size():
+    result = transactions_to_review(make_review_db(), sample_size=2)
+    assert len(result) == 4
+
+def test_review_skips_manual_rows():
+    conn = make_review_db()
+    set_manual_category(conn, 1, "Gifts")
+    result = transactions_to_review(conn, sample_size=10)
+    assert 1 not in result["id"].values
+
+def test_review_sample_is_reproducible():
+    first = transactions_to_review(make_review_db(), sample_size=2, seed=42)
+    second = transactions_to_review(make_review_db(), sample_size=2, seed=42)
+    assert list(first["id"]) == list(second["id"])
+
+def make_outdates_db():
+    """Two TESCO rows saved with an outdated category; row 2 is then labelled by hand."""
+    conn = sqlite3.connect(":memory:")
+    create_table(conn)
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2026-10-01", "2026-10-02"]),
+        "description": ["TESCO STORES", "TESCO STORES"],
+        "amount": [-10.0, -20.0],
+        "category": ["Other", "Other"],
+    })
+    save_transactions(df, conn)
+    set_manual_category(conn, 2, "Gifts")
+    return conn
+
+def test_recategorise_updates_rule_rows():
+    conn = make_outdates_db()
+    recategorise(conn)
+    result = load_transactions(conn)
+    assert result[result["id"] == 1]["category"].iloc[0] == "Groceries"
+
+def test_recategorise_keeps_manual_labels():
+    conn = make_outdates_db()
+    recategorise(conn)
+    result = load_transactions(conn)
+    assert result[result["id"] == 2]["category"].iloc[0] == "Gifts" 
