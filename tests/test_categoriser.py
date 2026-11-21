@@ -60,3 +60,6 @@ def test_incoming_wise_is_transfer():
 
 def test_other_positive_amount_still_income():
     assert categorise("SALARY ACME LTD", 1850.00) == "Income"
+
+def test_bank_fee_is_fees():
+    assert categorise("NON-STERLING TRANSACTION FEE", -0.43) == "Fees"
