@@ -136,3 +136,24 @@ def test_identical_amounts_not_flagged():
 def test_income_ignored():
     result = unusual_transactions(make_unusual_df())
     assert (result["amount"] < 0).all()
+
+def make_transfer_df():
+    """One month: salary, a purchase, and a transfer both ways"""
+    return pd.DataFrame({
+        "date": pd.to_datetime(["2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04"]),
+        "description": ["SALARY ACME LTD", "TESCO STORES", "WISE", "WISE"],
+        "amount": [1000.0, -50.0, -200.0, 100.0],
+        "category": ["Income", "Groceries", "Transfer", "Transfer"],
+    })
+
+def test_transfers_not_counted_as_spending():
+    summary = monthly_summary(make_transfer_df())
+    assert summary["spending"].iloc[0] == 50.0
+
+def test_transfers_not_counted_as_income():
+    summary = monthly_summary(make_transfer_df())
+    assert summary["income"].iloc[0] == 1000.0
+
+def test_transfers_not_in_spending_by_category():
+    result = spending_by_category(make_transfer_df())
+    assert "Transfer" not in result.index
