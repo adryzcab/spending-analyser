@@ -3,12 +3,18 @@ import pandas as pd
 
 
 
+def without_transfer(df: pd.DataFrame) -> pd.DataFrame:
+    """Return the transactions that aren't transfers between own accounts."""
+    if "category" not in df.columns:
+        return df
+    return df[df["category"] != "Transfer"]
 
 def spending_by_category(df: pd.DataFrame) -> pd.Series:
     """Return total spending per category, largest first.
     
     Expects a DataFrame with a 'category' column (see add_categories)
     """
+    df = without_transfer(df)
     spending = df[df["amount"] < 0]
     by_category = spending.groupby("category")["amount"].sum()
     by_category = by_category.abs().sort_values(ascending=False)
@@ -16,6 +22,7 @@ def spending_by_category(df: pd.DataFrame) -> pd.Series:
 
 def monthly_spending(df: pd.DataFrame) -> pd.Series:
     """Return total spending per month (positive numbers), oldest first."""
+    df = without_transfer(df)
     spending = df[df["amount"] < 0]
     months = spending["date"].dt.to_period("M")
     totals = spending.groupby(months)["amount"].sum()
@@ -28,6 +35,7 @@ def monthly_change(df: pd.DataFrame) -> pd.Series:
 
 def monthly_income(df: pd.DataFrame) -> pd.Series:
     """Return total income per month, oldest first."""
+    df = without_transfer(df)
     income = df[df["amount"] > 0]
     months = income["date"].dt.to_period("M")
     totals = income.groupby(months)["amount"].sum()
@@ -49,6 +57,7 @@ def unusual_transactions(df: pd.DataFrame) -> pd.DataFrame:
     Uses the IQR rule per category: a purchase is unusual if it's 
     above the category's 75th percentile + 1.5 * IQR
     """
+    df = without_transfer(df)
     spending = df[df["amount"] < 0]
     sizes = spending["amount"].abs()
     limits = sizes.groupby(spending["category"]).transform(upper_limit)
@@ -59,3 +68,4 @@ def upper_limit(amounts: pd.Series) -> float:
     q1 = amounts.quantile(0.25)
     q3 = amounts.quantile(0.75)
     return q3 + 1.5 * (q3 - q1)
+

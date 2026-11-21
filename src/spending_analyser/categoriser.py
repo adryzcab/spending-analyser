@@ -13,20 +13,25 @@ CATEGORY_RULES = {
     "Travel": ["EASYJET"],
     "Entertainment": ["STEAM GAMES"],
     "Self care": ["BOOTS"],
-    "Subscriptions": ["SPOTIFY", "NETFLIX"]
+    "Subscriptions": ["SPOTIFY", "NETFLIX"],
+    "Transfer": ["WISE"],
 }
+
+TWO_WAY_CATEGORIES = ["Transfer"]
 
 def categorise(description: str, amount: float) -> str:
     """Return the spending category for one transaction"""
+    text = description.upper()
+    for category in TWO_WAY_CATEGORIES:
+        for keyword in CATEGORY_RULES[category]:
+            if re.search(rf"\b{keyword}\b", text):
+                return category
     if amount > 0:
         return "Income"
-    
-    text = description.upper()
     for category, keywords in CATEGORY_RULES.items():
         for keyword in keywords:
             if re.search(rf"\b{keyword}\b", text):
                 return category
-
     return "Other"
 
 def add_categories(df: pd.DataFrame) -> pd.DataFrame:

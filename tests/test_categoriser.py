@@ -51,3 +51,12 @@ def test_add_categories_creates_column():
     df = load_hsbc_csv(SAMPLE_PATH)
     result = add_categories(df)
     assert result["category"].iloc[5] == "Rent"
+
+def test_outgoing_wise_is_transfer():
+    assert categorise("WISE", -200.00) == "Transfer"
+
+def test_incoming_wise_is_transfer():
+    assert categorise("WISE", 150.00) == "Transfer"
+
+def test_other_positive_amount_still_income():
+    assert categorise("SALARY ACME LTD", 1850.00) == "Income"
