@@ -15,9 +15,8 @@ def main():
         sys.exit(1)
     conn = sqlite3.connect(DB_PATH)
     create_table(conn)
-    for path in sys.argv[1:]:
-        add_statements(path, conn)
-        recategorise(conn)
+    add_statements(sys.argv[1:], conn)
+    recategorise(conn)
     print(monthly_summary(load_transactions(conn)))
     conn.close()
 
