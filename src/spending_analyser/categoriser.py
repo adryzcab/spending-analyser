@@ -3,7 +3,7 @@ import re
 
 
 CATEGORY_RULES = {
-    "Groceries": ["TESCO", "SAINSBURYS", "LIDL"],
+    "Groceries": ["TESCO", "SAINSBURYS", "LIDL", "ICELAND"],
     "Transport": ["TFL", "UBER"],
     "Eating out": ["CAFE", "PRET", "NANDOS"],
     "Shopping": ["AMAZON"],

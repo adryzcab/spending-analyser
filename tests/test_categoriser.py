@@ -66,3 +66,6 @@ def test_bank_fee_is_fees():
 
 def test_lidl_is_groceries():
     assert categorise("LIDL GB LONDON", -23.10) == "Groceries"
+
+def test_iceland_is_groceries():
+    assert categorise("ICELAND STEPNEY", -9.75) == "Groceries"
