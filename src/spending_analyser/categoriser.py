@@ -15,6 +15,7 @@ CATEGORY_RULES = {
     "Self care": ["BOOTS"],
     "Subscriptions": ["SPOTIFY", "NETFLIX"],
     "Transfer": ["WISE"],
+    "Fees": ["NON-STERLING"],
 }
 
 TWO_WAY_CATEGORIES = ["Transfer"]
