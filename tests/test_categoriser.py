@@ -63,3 +63,6 @@ def test_other_positive_amount_still_income():
 
 def test_bank_fee_is_fees():
     assert categorise("NON-STERLING TRANSACTION FEE", -0.43) == "Fees"
+
+def test_lidl_is_groceries():
+    assert categorise("LIDL GB LONDON", -23.10) == "Groceries"
