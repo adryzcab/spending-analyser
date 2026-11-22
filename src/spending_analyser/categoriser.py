@@ -3,17 +3,17 @@ import re
 
 
 CATEGORY_RULES = {
-    "Groceries": ["TESCO", "SAINSBURYS", "LIDL", "ICELAND"],
+    "Groceries": ["TESCO", "SAINSBURYS", "LIDL", "ICELAND", "SUPERMARKET", "TIAN TIAN", "ALDI", "OSEYO"],
     "Transport": ["TFL", "UBER"],
     "Eating out": ["CAFE", "PRET", "NANDOS"],
-    "Shopping": ["AMAZON"],
-    "Utilities": ["GAS", "ELECTRIC", "WATER"],
+    "Shopping": ["AMAZON", "PRIMARK", "TEMU.COM"],
+    "Utilities": ["GAS", "ELECTRIC", "WATER", "E.ON NEXT", "OCTOPUS", "COMMUNITYFIBRE"],
     "Saving": ["SAVING"],
     "Rent": ["RENT"],
     "Travel": ["EASYJET"],
     "Entertainment": ["STEAM GAMES"],
     "Self care": ["BOOTS"],
-    "Subscriptions": ["SPOTIFY", "NETFLIX"],
+    "Subscriptions": ["SPOTIFY", "NETFLIX", "PUREGYM"],
     "Transfer": ["WISE"],
     "Fees": ["NON-STERLING"],
 }

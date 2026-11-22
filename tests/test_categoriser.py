@@ -69,3 +69,33 @@ def test_lidl_is_groceries():
 
 def test_iceland_is_groceries():
     assert categorise("ICELAND STEPNEY", -9.75) == "Groceries"
+
+def test_gym_is_subscriptions():
+    assert categorise("PUREGYM", -22.0) == "Subscriptions"
+
+def test_eonnext_is_utility():
+    assert categorise("E.ON NEXT", -22.0) == "Utilities"
+
+def test_octopus_is_utility():
+    assert categorise("OCTOPUS", -22.0) == "Utilities"
+
+def test_communityfibre_is_utility():
+    assert categorise("COMMUNITYFIBRE", -22.0) == "Utilities"
+
+def test_primark_is_shopping():
+    assert categorise("PRIMARK", -23.4) == "Shopping"
+
+def test_temu_is_shopping():
+    assert categorise("TEMU.COM", -23.6) == "Shopping"
+
+def test_supermarket_is_groceries():
+    assert categorise("WATNEY SUPERMARKET", -12.1) == "Groceries"
+
+def test_tiantian_is_groceries():
+    assert categorise("TIAN TIAN MARKET", -3.52) == "Groceries"
+
+def test_aldi_is_groceries():
+    assert categorise("ALDI LONDON", -7.32) == "Groceries"
+
+def test_oseyo_is_groceries():
+    assert categorise("OSEYO LONDON", -9.13) == "Groceries"
