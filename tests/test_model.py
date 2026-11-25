@@ -7,7 +7,7 @@ def make_training_df():
 
     rows = (
         [("TESCO STORES", "Groceries", "manual")] * 5
-        + [("PRET A MANGER", "Eating Out", "manual")] * 5
+        + [("PRET A MANGER", "Eating out", "manual")] * 5
         + [("EASY JET", "Travel", "manual")] * 2
         + [("TESCO STORES", "Wrong", "rule")] * 5
     )
@@ -25,7 +25,7 @@ def test_model_skips_rare_categories():
     model = train_model(make_training_df())
     assert "Travel" not in model.classes_
 
-def test_saved_model_loads_back():
+def test_saved_model_loads_back(tmp_path):
     model = train_model(make_training_df())
     path = tmp_path / "model.joblib"
     save_model(model, path)

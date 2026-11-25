@@ -32,12 +32,12 @@ def load_model(path: str) -> Pipeline:
     """Load a model saved with save_model."""
     return joblib.load(path)
 
-def predict_confident(model: Pipeline, description: pd.Series, threshold: float) -> pd.Series:
+def predict_confident(model: Pipeline, descriptions: pd.Series, threshold: float) -> pd.Series:
     """Predict categories, keeping only predictions at least 'threshold confident'.
     
     Less confident predictions are returned as None.
     """
-    probabilities = model.predict_proba(description)
+    probabilities = model.predict_proba(descriptions)
     best = probabilities.argmax(axis=1)
     confidence = probabilities.max(axis=1)
 
