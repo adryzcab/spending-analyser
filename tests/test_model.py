@@ -1,6 +1,6 @@
 import pandas as pd
 
-from spending_analyser.model import load_model, save_model, train_model
+from spending_analyser.model import load_model, save_model, train_model, predict_confident
 
 def make_training_df():
     """Manual Groceries and Eating out labels, a rare category, and rule rows with a wrong label."""
@@ -31,3 +31,18 @@ def test_saved_model_loads_back():
     save_model(model, path)
     loaded = load_model(path)
     assert list(loaded.predict(["TESCO EXPRESS"])) == ["Groceries"]
+
+def test_confident_predictions_kept():
+    model = train_model(make_training_df())
+    result = predict_confident(model, pd.Series(["TESCO STORES"]), threshold=0.5)
+    assert result.iloc[0] == "Groceries"
+
+def test_unconfident_predictions_are_none():
+    model = train_model(make_training_df())
+    result = predict_confident(model, pd.Series(["TESCO STORES"]), threshold=1.01)
+    assert result.iloc[0] is None
+
+def rest_predictions_keep_input_index():
+    model = train_model(make_training_df())
+    descriptions = pd.Series(["TESCO STORES", "PRET A MANGER"], index=[10, 20])
+    assert list(result.index) == [10, 20]
