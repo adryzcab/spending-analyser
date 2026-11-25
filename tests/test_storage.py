@@ -112,3 +112,41 @@ def test_recategorise_keeps_manual_labels():
     recategorise(conn)
     result = load_transactions(conn)
     assert result[result["id"] == 2]["category"].iloc[0] == "Gifts" 
+
+OLD_COLUMNS = """
+    id INTEGER PRIMARY KEY,
+    date TEXT NOT NULL,
+    description TEXT NOT NULL,
+    amount REAL NOT NULL,
+    category TEXT,
+    category_source TEXT CHECK (category_source IN ('rule', 'manual'))
+"""
+
+def make_old_db():
+    """A database created with the old table rule, holding one manual label."""
+    conn = sqlite3.connect(":memory:")
+    conn.execute(f"CREATE TABLE transactions ({OLD_COLUMNS})")
+    conn.execute(
+        "INSERT INTO transactions (date, description, amount, category, category_source) "
+        "VALUES ('2026-10-01', 'TESCO STORES', -10.0, 'Gifts', 'manual')"
+    )
+    conn.commit()
+    return conn
+
+def test_upgrade_keeps_existing_rows():
+    conn = make_old_db()
+    create_table(conn)
+    result = load_transactions(conn)
+    assert len(result) == 1
+    assert result["category"].iloc[0] == "Gifts"
+
+def test_upgrade_allows_model_sources():
+    conn = make_old_db()
+    create_table(conn)
+    conn.execute("UPDATE transactions SET category_source = 'model' WHERE id = 1")
+
+def test_upgrade_is_safe_to_repeat():
+    conn = make_old_db()
+    create_table(conn)
+    create_table(conn)
+    assert len(load_transactions(conn)) == 1

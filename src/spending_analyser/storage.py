@@ -4,18 +4,34 @@ import pandas as pd
 
 from spending_analyser.categoriser import categorise
 
+COLUMNS = """
+    id INTEGER PRIMARY KEY,
+    date TEXT NOT NULL,
+    description TEXT NOT NULL,
+    amount REAL NOT NULL,
+    category TEXT,
+    category_source TEXT CHECK(category_source in ('rule', 'manual', 'model'))
+"""
+
+
 def create_table(conn: sqlite3.Connection) -> None:
-    """Create the transaction table if it doesn't exist."""
-    conn.execute("""
-    CREATE TABLE IF NOT EXISTS transactions (
-        id INTEGER PRIMARY KEY,
-        date TEXT NOT NULL,
-        description TEXT NOT NULL,
-        amount REAL NOT NULL,
-        category TEXT,
-        category_source TEXT CHECK (category_source IN ('rule', 'manual'))
-    )
-""")
+    """Create the transactions table if needed, and upgrade older versions of it."""
+    conn.execute(f"CREATE TABLE IF NOT EXISTS transactions ({COLUMNS})")
+    allow_model_source(conn)
+
+def allow_model_source(conn: sqlite3.Connection) -> None:
+    """Upgrade an older table so category_source can also be 'model'. Safe to run repeatedly."""
+    schema = conn.execute(
+        "SELECT sql from sqlite_master WHERE type = 'table' AND name = 'transactions'"
+    ).fetchone()[0]
+    if "'model'" in schema:
+        return
+    with conn:
+        conn.execute("BEGIN")
+        conn.execute(f"CREATE TABLE transactions_new ({COLUMNS})")
+        conn.execute("INSERT INTO transactions_new SELECT * FROM transactions")
+        conn.execute("DROP TABLE transactions")
+        conn.execute("ALTER TABLE transactions_new RENAME TO transactions")
 
 def save_transactions(df: pd.DataFrame, conn:sqlite3.Connection) -> None:
     """Save transactions to the database."""
