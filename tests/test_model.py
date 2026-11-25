@@ -1,0 +1,33 @@
+import pandas as pd
+
+from spending_analyser.model import load_model, save_model, train_model
+
+def make_training_df():
+    """Manual Groceries and Eating out labels, a rare category, and rule rows with a wrong label."""
+
+    rows = (
+        [("TESCO STORES", "Groceries", "manual")] * 5
+        + [("PRET A MANGER", "Eating Out", "manual")] * 5
+        + [("EASY JET", "Travel", "manual")] * 2
+        + [("TESCO STORES", "Wrong", "rule")] * 5
+    )
+    return pd.DataFrame(rows, columns=["description", "category", "category_source"])
+
+def test_model_learns_from_manual_labels():
+    model = train_model(make_training_df())
+    assert list(model.predict(["TESCO STORES", "PRET A MANGER"])) == ["Groceries", "Eating out"]
+
+def test_model_ignores_non_manual_rows():
+    model = train_model(make_training_df())
+    assert "Wrong" not in model.classes_
+
+def test_model_skips_rare_categories():
+    model = train_model(make_training_df())
+    assert "Travel" not in model.classes_
+
+def test_saved_model_loads_back():
+    model = train_model(make_training_df())
+    path = tmp_path / "model.joblib"
+    save_model(model, path)
+    loaded = load_model(path)
+    assert list(loaded.predict(["TESCO EXPRESS"])) == ["Groceries"]

@@ -223,3 +223,4 @@ __marimo__/
 data/raw/
 notebooks/01_explore_hsbc.ipynb
 *.db
+models/
